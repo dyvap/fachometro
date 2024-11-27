@@ -6,7 +6,6 @@ const MedidorFacha = () => {
   const [frase, setFrase] = useState('');
   const [resultado, setResultado] = useState(null);
   const [analizando, setAnalizando] = useState(false);
-  const [descripcionActual, setDescripcionActual] = useState(null);
 
   const patrones = {
     frasesExtremistas: [
@@ -119,49 +118,41 @@ const MedidorFacha = () => {
   };
 
   const analizarTexto = (texto) => {
-	  const textoProcesado = texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-	  const palabras = textoProcesado.split(/\s+/);
-	  
-	  let puntuacion = 50;
-	  let hayPalabrasDetectadas = false;
-	  
-	  // Buscar frases extremistas
-	  patrones.frasesExtremistas.forEach(frase => {
-		if(textoProcesado.includes(frase.normalize("NFD").replace(/[\u0300-\u036f]/g, ""))) {
-		  puntuacion += 25;
-		  hayPalabrasDetectadas = true;
-		}
-	  });
+    const textoProcesado = texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const palabras = textoProcesado.split(/\s+/);
+    
+    let puntuacion = 50;
+    
+    patrones.frasesExtremistas.forEach(frase => {
+      if(textoProcesado.includes(frase.normalize("NFD").replace(/[\u0300-\u036f]/g, ""))) {
+        puntuacion += 25;
+      }
+    });
 
-	  // Buscar palabras individuales
-	  palabras.forEach(palabra => {
-		if(patrones.palabrasFacha.some(p => palabra.includes(p.normalize("NFD").replace(/[\u0300-\u036f]/g, "")))) {
-		  puntuacion += 12;
-		  hayPalabrasDetectadas = true;
-		}
-		if(patrones.palabrasProgre.some(p => palabra.includes(p.normalize("NFD").replace(/[\u0300-\u036f]/g, "")))) {
-		  puntuacion -= 12;
-		  hayPalabrasDetectadas = true;
-		}
-	  });
+    palabras.forEach(palabra => {
+      if(patrones.palabrasFacha.some(p => palabra.includes(p.normalize("NFD").replace(/[\u0300-\u036f]/g, "")))) {
+        puntuacion += 12;
+      }
+      if(patrones.palabrasProgre.some(p => palabra.includes(p.normalize("NFD").replace(/[\u0300-\u036f]/g, "")))) {
+        puntuacion -= 12;
+      }
+    });
 
-	  // Si no se detectaron palabras clave, añadir variación aleatoria
-	  if (!hayPalabrasDetectadas) {
-		// Genera un número aleatorio entre -20 y 20
-		const variacion = Math.floor(Math.random() * 41) - 20;
-		puntuacion += variacion;
-	  }
+    if(texto.toLowerCase().includes('arriba') && texto.toLowerCase().includes('españa')) {
+      puntuacion += 15;
+    }
+    if(texto.toLowerCase().includes('viva') && texto.toLowerCase().includes('franco')) {
+      puntuacion += 20;
+    }
 
-	  return Math.min(Math.max(Math.round(puntuacion), 0), 100);
-	};
+    return Math.min(Math.max(Math.round(puntuacion), 0), 100);
+  };
 
   const handleClick = () => {
     setAnalizando(true);
     setTimeout(() => {
       const nivelFacha = analizarTexto(frase);
-      const nuevoNivel = getNivelTexto(nivelFacha);
       setResultado(nivelFacha);
-      setDescripcionActual(nuevoNivel);
       setAnalizando(false);
     }, 1500);
   };
@@ -258,18 +249,18 @@ const MedidorFacha = () => {
       )}
 
       {resultado !== null && !analizando && (
-		<div className="mt-8 text-center">
-		  <div className={`text-6xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r ${getColor(resultado)}`}>
-			{resultado}%
-		  </div>
-		  
-		  <div className="text-2xl font-bold mb-2">
-			{descripcionActual.titulo}
-		  </div>
-		  
-		  <div className="text-xl mb-4 p-4 rounded-lg bg-gradient-to-r from-gray-50 to-gray-100">
-			{descripcionActual.descripcion}
-		  </div>
+        <div className="mt-8 text-center">
+          <div className={`text-6xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r ${getColor(resultado)}`}>
+            {resultado}%
+          </div>
+          
+          <div className="text-2xl font-bold mb-2">
+            {getNivelTexto(resultado).titulo}
+          </div>
+          
+          <div className="text-xl mb-4 p-4 rounded-lg bg-gradient-to-r from-gray-50 to-gray-100">
+            {getNivelTexto(resultado).descripcion}
+          </div>
 
           <div className="flex justify-center space-x-4 mt-6">
             {[...Array(Math.ceil(resultado/20))].map((_, i) => (
