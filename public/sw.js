@@ -1,10 +1,10 @@
-const CACHE_NAME = 'fachometro-v3';  // Cambia esto con cada despliegue
+const CACHE_NAME = 'fachometro-v4';  // Cambia esto con cada despliegue
 const urlsToCache = [
   '/fachometro/',
   '/fachometro/index.html',
   '/fachometro/manifest.json',
-  '/fachometro/assets/index-BqC7zz0i.js',  // Asegúrate de que los nombres de archivo son correctos
-  '/fachometro/assets/index-B6vGBxOe.css'
+  '/fachometro/assets/index-BJCfK2mm.js',  // Asegúrate de que los nombres de archivo son correctos
+  '/fachometro/assets/index-DSBNLFtR.css'
 ];
 
 self.addEventListener('install', event => {
