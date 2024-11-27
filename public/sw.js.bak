@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fachometro-v1';
+const CACHE_NAME = 'fachometro-v2';
 const urlsToCache = [
   '/fachometro/',
   '/fachometro/index.html',
