@@ -6,6 +6,7 @@ const MedidorFacha = () => {
   const [frase, setFrase] = useState('');
   const [resultado, setResultado] = useState(null);
   const [analizando, setAnalizando] = useState(false);
+  const [descripcionActual, setDescripcionActual] = useState(null);
 
   const patrones = {
     frasesExtremistas: [
@@ -118,41 +119,49 @@ const MedidorFacha = () => {
   };
 
   const analizarTexto = (texto) => {
-    const textoProcesado = texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    const palabras = textoProcesado.split(/\s+/);
-    
-    let puntuacion = 50;
-    
-    patrones.frasesExtremistas.forEach(frase => {
-      if(textoProcesado.includes(frase.normalize("NFD").replace(/[\u0300-\u036f]/g, ""))) {
-        puntuacion += 25;
-      }
-    });
+	  const textoProcesado = texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+	  const palabras = textoProcesado.split(/\s+/);
+	  
+	  let puntuacion = 50;
+	  let hayPalabrasDetectadas = false;
+	  
+	  // Buscar frases extremistas
+	  patrones.frasesExtremistas.forEach(frase => {
+		if(textoProcesado.includes(frase.normalize("NFD").replace(/[\u0300-\u036f]/g, ""))) {
+		  puntuacion += 25;
+		  hayPalabrasDetectadas = true;
+		}
+	  });
 
-    palabras.forEach(palabra => {
-      if(patrones.palabrasFacha.some(p => palabra.includes(p.normalize("NFD").replace(/[\u0300-\u036f]/g, "")))) {
-        puntuacion += 12;
-      }
-      if(patrones.palabrasProgre.some(p => palabra.includes(p.normalize("NFD").replace(/[\u0300-\u036f]/g, "")))) {
-        puntuacion -= 12;
-      }
-    });
+	  // Buscar palabras individuales
+	  palabras.forEach(palabra => {
+		if(patrones.palabrasFacha.some(p => palabra.includes(p.normalize("NFD").replace(/[\u0300-\u036f]/g, "")))) {
+		  puntuacion += 12;
+		  hayPalabrasDetectadas = true;
+		}
+		if(patrones.palabrasProgre.some(p => palabra.includes(p.normalize("NFD").replace(/[\u0300-\u036f]/g, "")))) {
+		  puntuacion -= 12;
+		  hayPalabrasDetectadas = true;
+		}
+	  });
 
-    if(texto.toLowerCase().includes('arriba') && texto.toLowerCase().includes('españa')) {
-      puntuacion += 15;
-    }
-    if(texto.toLowerCase().includes('viva') && texto.toLowerCase().includes('franco')) {
-      puntuacion += 20;
-    }
+	  // Si no se detectaron palabras clave, añadir variación aleatoria
+	  if (!hayPalabrasDetectadas) {
+		// Genera un número aleatorio entre -20 y 20
+		const variacion = Math.floor(Math.random() * 41) - 20;
+		puntuacion += variacion;
+	  }
 
-    return Math.min(Math.max(Math.round(puntuacion), 0), 100);
-  };
+	  return Math.min(Math.max(Math.round(puntuacion), 0), 100);
+	};
 
   const handleClick = () => {
     setAnalizando(true);
     setTimeout(() => {
       const nivelFacha = analizarTexto(frase);
+      const nuevoNivel = getNivelTexto(nivelFacha);
       setResultado(nivelFacha);
+      setDescripcionActual(nuevoNivel);
       setAnalizando(false);
     }, 1500);
   };
