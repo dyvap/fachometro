@@ -201,7 +201,7 @@ const MedidorFacha = () => {
             size={24}
           />
         ))}
-        <p className="text-gray-600 italic">¡Análisis científico basado en IA avanzada!</p>
+        <p className="text-gray-600 italic">¡100% científico y avalado por la Universidad de Móstoles!</p>
       </div>
 
       <div className="mb-6">
